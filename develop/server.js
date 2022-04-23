@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const uuid = require('./helpers/uuid');
 const PORT = 3001;
 
 const app = express();
@@ -28,21 +29,17 @@ app.get('/api/notes', (req, res) => {
   });
 })
 
-// POST /api/notes should receive new note on the req.body and add to db.json and return the new note to client
+// Post new notes
 app.post('/api/notes', (req, res) => {
   fs.readFile('./db/db.json', (err, results) => {
       if (err) {
           throw err
       } else {
-          let existingNotes = JSON.parse(results);
-          let newNotes = req.body;
-          // each note should have unique ID when saved
-          let noteLength = (existingNotes.length).toString();
-          newNotes.id = noteLength;
-          // pushing updated notes with ids to existing notes array
-          existingNotes.push(newNotes);
-          // writing to file updated notes array
-          fs.writeFile('./db/db.json', JSON.stringify(existingNotes), (err) => {
+          let notes = JSON.parse(results);
+          let newNote = req.body;
+          newNote.id = uuid();
+          notes.push(newNote);
+          fs.writeFile('./db/db.json', JSON.stringify(notes), (err) => {
               if (err) {
                   throw err
               } else {
@@ -52,6 +49,7 @@ app.post('/api/notes', (req, res) => {
       };
   });
 });
+
 
 /* index APIs */
 
