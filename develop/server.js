@@ -50,6 +50,25 @@ app.post('/api/notes', (req, res) => {
   });
 });
 
+// Delete note
+app.delete('/api/notes/:id', (req, res) => {
+  fs.readFile('./db/db.json', (err, results) => {
+      if (err) {
+          throw err
+      } else {
+          let notes = JSON.parse(results);
+          let noteIds = req.params.id.toString();
+          const noteArray = notes.filter(note => note.id.toString() !== noteIds);
+          fs.writeFile('./db/db.json', JSON.stringify(noteArray), (err) => {
+              if (err) {
+                  throw err
+              } else {
+                  res.json(noteArray);
+              }
+          });
+      };
+  });
+});
 
 /* index APIs */
 
